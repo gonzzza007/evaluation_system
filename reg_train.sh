@@ -1,0 +1,1 @@
+python -m regression.train.train_model
