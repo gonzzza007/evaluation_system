@@ -44,7 +44,7 @@ def train_and_save_model(
 
 if __name__ == "__main__":
     # Configure paths
-    DATA_PATH = Path("data/processed/training_data.csv")
+    DATA_PATH = Path("data/training_data.csv")
     MODEL_SAVE_PATH = Path("regression/models/saved_models/latest_model.pkl")
     CONFIG_PATH = Path("configs/regression_params.yaml")
     

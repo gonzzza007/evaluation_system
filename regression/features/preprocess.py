@@ -1,8 +1,14 @@
+
+import sys
 import sqlite3
 import pandas as pd
 from pathlib import Path
 import argparse
 from typing import Dict, Any
+
+sys.path.append(str(Path(__file__).parent.parent))
+from tools.various import maakond_to_id
+
 
 def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
     """Fetch property data from SQLite database"""
@@ -13,7 +19,7 @@ def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
     # Fetch basic property info
     cursor.execute("""
         SELECT cadastral_nr, area, county, added_on, price 
-        FROM properties
+        FROM properties WHERE (county IS NOT NULL) AND (TRIM(county) != '') AND (TRIM(county) != 'N/A')
     """)
     properties = cursor.fetchall()
     
@@ -33,10 +39,10 @@ def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
         
         property_data[cadaster_nr] = {
             'cadaster_nr': cadaster_nr,
-            'area': prop[1],
-            'maakond': prop[2],
-            'soil_type': prop[3],
-            'water_distance': prop[4],
+            'area': prop['area'],
+            'maakond': prop['county'],
+            # 'soil_type': prop[3],
+            # 'water_distance': prop[4],
             'price': prop['price'],
             # 'stands': [{'tree_breed': s[0], 'age': s[1]} for s in stands]
         }
@@ -54,7 +60,7 @@ def process_to_dataframe(property_data: Dict[str, Any]) -> pd.DataFrame:
         records.append({
             'cadaster_nr': cadaster,
             'area': data['area'],
-            'maakond': data['maakond'],
+            'maakond': maakond_to_id(data['maakond']),
             # 'soil_type': data['soil_type'],
             # 'water_distance': data['water_distance'],
             # 'avg_tree_age': sum(s['age'] for s in data['stands'])/len(data['stands']),
@@ -62,7 +68,7 @@ def process_to_dataframe(property_data: Dict[str, Any]) -> pd.DataFrame:
                 # set(s['tree_breed'] for s in data['stands']), 
                 # key=lambda x: sum(1 for s in data['stands'] if s['tree_breed'] == x)
             # ),
-            'target_price': data['price']
+            'price': data['price']
         })
     return pd.DataFrame(records)
 
@@ -79,14 +85,13 @@ def main():
     db_path = Path(args.db_path)
     output_path = Path(args.output)
     
-    # Ensure output directory exists
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    
     # Process data
     print(f"Loading data from {db_path}...")
     property_data = fetch_properties_from_db(db_path)
     df = process_to_dataframe(property_data)
-    df.to_csv(output_path, index=False)
+    df.to_csv(output_path / "training_data.csv", index=False)
+    df.to_parquet(output_path / "training_data.parquet")
+
     print(f"Successfully processed {len(df)} properties to {output_path}")
 
 if __name__ == "__main__":

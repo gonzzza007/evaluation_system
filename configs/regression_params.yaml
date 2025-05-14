@@ -1,0 +1,35 @@
+# Model hyperparameters
+model:
+  name: "lightgbm"
+  params:
+    num_leaves: 31
+    learning_rate: 0.05
+    n_estimators: 1000
+    feature_fraction: 0.9
+    max_depth: -1
+    min_data_in_leaf: 20
+    random_state: 42
+
+# Feature engineering parameters
+features:
+  numeric:
+    impute_strategy: "median"
+    scale: true
+  categorical:
+    impute_strategy: "constant"
+    handle_unknown: "ignore"
+    
+# Training configuration
+training:
+  early_stopping_rounds: 50
+  validation_size: 0.2
+  metrics: ["rmse", "mae", "r2"]
+  
+# Feature selection
+feature_groups:
+  mandatory:
+    - "area"
+    - "avg_tree_age"
+  optional:
+    - "water_distance"
+    - "slope_percentage"
