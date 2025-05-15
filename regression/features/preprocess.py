@@ -1,4 +1,3 @@
-
 import sys
 import sqlite3
 import pandas as pd
@@ -7,7 +6,7 @@ import argparse
 from typing import Dict, Any
 
 sys.path.append(str(Path(__file__).parent.parent))
-from tools.various import maakond_to_id
+from tools.various import string_cleanup
 
 
 def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
@@ -36,6 +35,7 @@ def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
         """, (cadaster_nr,))
         stands = cursor.fetchall()
         '''
+
         
         property_data[cadaster_nr] = {
             'cadaster_nr': cadaster_nr,
@@ -60,7 +60,7 @@ def process_to_dataframe(property_data: Dict[str, Any]) -> pd.DataFrame:
         records.append({
             'cadaster_nr': cadaster,
             'area': data['area'],
-            'maakond': maakond_to_id(data['maakond']),
+            'maakond': string_cleanup(data['maakond']),
             # 'soil_type': data['soil_type'],
             # 'water_distance': data['water_distance'],
             # 'avg_tree_age': sum(s['age'] for s in data['stands'])/len(data['stands']),

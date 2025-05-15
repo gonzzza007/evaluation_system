@@ -7,9 +7,9 @@ def train_regression_model(data_path: str):
     # Load processed data
     df = pd.read_csv(data_path)
     
-    # Split features/target (target = historical prices)
-    X = df.drop(columns=['target_price', 'cadaster_nr'])
-    y = df['target_price']
+    # Split features/target (target = price)
+    X = df.drop(columns=['price', 'cadaster_nr']) # Features matrix
+    y = df['price'] # Target vector
     
     # Train/validation split
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2)

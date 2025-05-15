@@ -1,3 +1,4 @@
+from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
@@ -6,8 +7,8 @@ def create_feature_pipeline(X):
     """Create feature engineering pipeline"""
     
     # Define numeric and categorical features
-    numeric_features = ['area', 'avg_tree_age', 'water_distance']
-    categorical_features = ['maakond', 'soil_type', 'dominant_breed']
+    numeric_features = ['area']
+    categorical_features = ['maakond']
     
     # Numeric feature pipeline
     numeric_transformer = Pipeline(steps=[

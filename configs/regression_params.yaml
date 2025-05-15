@@ -29,7 +29,7 @@ training:
 feature_groups:
   mandatory:
     - "area"
-    - "avg_tree_age"
+    # - "avg_tree_age"
   optional:
     - "water_distance"
     - "slope_percentage"

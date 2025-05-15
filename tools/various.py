@@ -1,3 +1,4 @@
+import unicodedata
 '''
 # Coordinate transformation (EPSG:3301 -> WGS84 if needed)
 transformer = pyproj.Transformer.from_crs(3301, 4326, always_xy=True)
@@ -32,3 +33,8 @@ def maakond_to_id(maakond: str) -> int:
     if maakond in maakonnad:
         return maakonnad[maakond]
     return 999
+
+
+def string_cleanup(txt: str) -> str:
+    normalized = unicodedata.normalize('NFKD', txt.decode('utf-8').lower().replace(' ', '_'))
+    return ''.join(c for c in normalized if not unicodedata.combining(c))

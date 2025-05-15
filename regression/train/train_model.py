@@ -3,7 +3,7 @@ import joblib
 from lightgbm import LGBMRegressor
 from sklearn.pipeline import Pipeline
 from pathlib import Path
-from .features.feature_pipeline import create_feature_pipeline
+from ..features.feature_pipeline import create_feature_pipeline
 
 def train_and_save_model(
     data_path: Path,
@@ -16,8 +16,8 @@ def train_and_save_model(
     df = pd.read_csv(data_path)
     
     # 2. Split features/target
-    X = df.drop(columns=['target_price', 'cadaster_nr'])
-    y = df['target_price']
+    X = df.drop(columns=['price', 'cadaster_nr']) #feature matrix
+    y = df['price'] # target vector
     
     # 3. Create feature engineering pipeline
     feature_pipeline = create_feature_pipeline(X)
