@@ -1,3 +1,1 @@
-python -m regression.features.preprocess \
-  --db-path ../metsad.sqlite \
-  --output data
+time python -m regression.preprocess

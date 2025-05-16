@@ -7,7 +7,7 @@ def create_feature_pipeline(X):
     """Create feature engineering pipeline"""
     
     # Define numeric and categorical features
-    numeric_features = ['area']
+    numeric_features = ['area', 'sale_date', 'epsg_x', 'epsg_y']
     categorical_features = ['maakond']
     
     # Numeric feature pipeline
