@@ -67,7 +67,6 @@ def get_xml_data(cadaster_nr: str) -> dict:
     y_min = 9999999
     y_max = 0
     no_data = False
-
     
     # we have owner XML!
     filepath = '../metsaregister_xml/' + prettify_cadaster(cadaster_nr) + ".xml"
