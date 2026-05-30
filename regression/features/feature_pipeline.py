@@ -8,7 +8,12 @@ def create_feature_pipeline(X):
     
     # Define numeric and categorical features
     numeric_features = ['area', 'sale_date', 'epsg_x', 'epsg_y']
-    categorical_features = ['maakond']
+    categorical_features = [
+        'maakond',
+        'soilbodylabel',
+        # 'soil_profile',  # too many unique values for current dataset size (~217 unique / 325 rows)
+        # 'soil_mod',      # too many unique values for current dataset size (~105 unique / 325 rows)
+    ]
     
     # Numeric feature pipeline
     numeric_transformer = Pipeline(steps=[

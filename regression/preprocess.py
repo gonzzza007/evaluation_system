@@ -7,6 +7,7 @@ from typing import Dict, Any
 
 sys.path.append(str(Path(__file__).parent.parent))
 from tools.various import string_cleanup, normalize_date, get_xml_data
+from tools.soil_type import get_soil_type
 
 
 def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
@@ -32,20 +33,19 @@ def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
         xml_data = get_xml_data(cadaster_nr)
 
         if not xml_data['no_data']:
+            soil = get_soil_type(xml_data['epsg_x'], xml_data['epsg_y']) or {}
 
             property_data[cadaster_nr] = {
                 'cadaster_nr': cadaster_nr,
                 'area': prop['area'],
                 'maakond': prop['county'],
                 'sale_date': prop['added_on'],
-
                 'epsg_x': xml_data['epsg_x'],
                 'epsg_y': xml_data['epsg_y'],
-
-                # 'soil_type': prop[3],
-                # 'water_distance': prop[4],
+                'soilbodylabel': soil.get('soilbodylabel'),
+                'soil_profile': soil.get('soil_profile'),
+                'soil_mod': soil.get('soil_mod'),
                 'price': prop['price'],
-                # 'stands': [{'tree_breed': s[0], 'age': s[1]} for s in stands]
         }
     
     conn.close()
@@ -59,21 +59,15 @@ def process_to_dataframe(property_data: Dict[str, Any]) -> pd.DataFrame:
             # continue  # Skip properties with no stands
             
         records.append({
-            # 'cadaster_nr': cadaster,
             'area': data['area'],
             'maakond': string_cleanup(data['maakond']),
             'sale_date': normalize_date(data['sale_date']),
             'epsg_x': data['epsg_x'],
             'epsg_y': data['epsg_y'],
-
-            # 'soil_type': data['soil_type'],
-            # 'water_distance': data['water_distance'],
-            # 'avg_tree_age': sum(s['age'] for s in data['stands'])/len(data['stands']),
-            # 'dominant_breed': max(
-                # set(s['tree_breed'] for s in data['stands']), 
-                # key=lambda x: sum(1 for s in data['stands'] if s['tree_breed'] == x)
-            # ),
-            'price': data['price']
+            'soilbodylabel': data['soilbodylabel'],
+            'soil_profile': data['soil_profile'],
+            'soil_mod': data['soil_mod'],
+            'price': data['price'],
         })
     return pd.DataFrame(records)
 
