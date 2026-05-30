@@ -1,3 +1,3 @@
-python -m regression.evaluation.evaluate_model \
+python -m regression.evaluate \
   --model regression/models/saved_models/latest_model.pkl \
-  --test-data data/processed/test_data.csv
+  --test-data data/test_data.parquet

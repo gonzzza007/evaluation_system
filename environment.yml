@@ -1,0 +1,13 @@
+name: silva
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.13
+  - pip
+  - pip:
+    - pandas
+    - scikit-learn
+    - pyarrow
+    - lightgbm
+    - joblib

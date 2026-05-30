@@ -16,7 +16,9 @@ def process_coordinates(x: float, y: float) -> Tuple[float, float]:
 
 def maakond_to_id(maakond: str) -> int:
     
-    maakond = maakond.strip().decode("utf-8")
+    if isinstance(maakond, bytes):
+        maakond = maakond.decode('utf-8')
+    maakond = maakond.strip()
     maakonnad = {
         "Harju maakond": 0,          
         "Hiiu maakond" : 1,
@@ -40,8 +42,10 @@ def maakond_to_id(maakond: str) -> int:
     return 999
 
 
-def string_cleanup(txt: str) -> str:
-    normalized = unicodedata.normalize('NFKD', txt.decode('utf-8').lower().replace(' ', '_'))
+def string_cleanup(txt) -> str:
+    if isinstance(txt, bytes):
+        txt = txt.decode('utf-8')
+    normalized = unicodedata.normalize('NFKD', txt.lower().replace(' ', '_'))
     return ''.join(c for c in normalized if not unicodedata.combining(c))
 
 
@@ -57,8 +61,10 @@ def normalize_date(date_str: str) -> int:
         return 0  # Fallback value
     
 
-def prettify_cadaster(cadaster_nr: str) -> str:
-    return cadaster_nr.decode('utf-8').replace(':', '_')
+def prettify_cadaster(cadaster_nr) -> str:
+    if isinstance(cadaster_nr, bytes):
+        cadaster_nr = cadaster_nr.decode('utf-8')
+    return cadaster_nr.replace(':', '_')
     
 def get_xml_data(cadaster_nr: str) -> dict:
 

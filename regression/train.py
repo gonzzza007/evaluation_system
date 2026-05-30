@@ -2,6 +2,8 @@ import pandas as pd
 import joblib
 from lightgbm import LGBMRegressor
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 from pathlib import Path
 from regression.features.feature_pipeline import create_feature_pipeline
 
@@ -10,37 +12,43 @@ def train_and_save_model(
     model_save_path: Path,
     config_path: Path
 ):
-    """Main training workflow"""
-    
-    # 1. Load and preprocess data
-    # df = pd.read_csv(data_path)
     df = pd.read_parquet(data_path)
 
-    
-    # 2. Split features/target
-    X = df.drop(columns=['price']) #feature matrix
-    y = df['price'] # target vector
-    
-    # 3. Create feature engineering pipeline
-    feature_pipeline = create_feature_pipeline(X)
-    
-    # 4. Define model with hyperparameters
+    X = df.drop(columns=['price'])
+    y = df['price']
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    print(f"Train: {len(X_train)} samples, Test: {len(X_test)} samples")
+
+    feature_pipeline = create_feature_pipeline(X_train)
+
     model = LGBMRegressor(
         num_leaves=31,
         learning_rate=0.05,
-        n_estimators=1000
+        n_estimators=1000,
+        objective='mape',
     )
-    
-    # 5. Create full pipeline
+
     full_pipeline = Pipeline([
         ('features', feature_pipeline),
         ('model', model)
     ])
-    
-    # 6. Train model
-    full_pipeline.fit(X, y)
-    
-    # 7. Save trained model
+
+    full_pipeline.fit(X_train, y_train)
+
+    # Save test set with original prices for evaluate.py
+    test_df = X_test.copy()
+    test_df['price'] = y_test
+    test_save_path = data_path.parent / 'test_data.parquet'
+    test_df.to_parquet(test_save_path)
+
+    predictions = full_pipeline.predict(X_test)
+    print(f"Test MAE:  {mean_absolute_error(y_test, predictions):.0f}")
+    print(f"Test RMSE: {root_mean_squared_error(y_test, predictions):.0f}")
+    print(f"Test R²:   {r2_score(y_test, predictions):.3f}")
+
     joblib.dump(full_pipeline, model_save_path)
     print(f"Model saved to {model_save_path}")
 

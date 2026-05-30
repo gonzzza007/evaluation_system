@@ -17,8 +17,10 @@ def fetch_properties_from_db(db_path: Path) -> Dict[str, Any]:
     
     # Fetch basic property info
     cursor.execute("""
-        SELECT cadastral_nr, area, county, added_on, price 
-        FROM properties WHERE (county IS NOT NULL) AND (TRIM(county) != '') AND (TRIM(county) != 'N/A')
+        SELECT cadastral_nr, area, county, added_on, price
+        FROM properties
+        WHERE hidden = 0 AND price > 1000 AND area > 1000
+          AND (county IS NOT NULL) AND (TRIM(county) != '') AND (TRIM(county) != 'N/A')
     """)
     properties = cursor.fetchall()
     
